@@ -1,0 +1,425 @@
+﻿@model IEnumerable<Web_TinTuc.Models.TinTuc>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="app-content content ">
+    <div class="content-overlay"></div>
+    <div class="header-navbar-shadow"></div>
+    <div class="content-wrapper container-xxl p-0">
+        <div class="content-header row">
+            <button class="btn_create btn btn-primary" id="btn_create">
+                <i data-feather="plus"></i> New
+            </button>
+        </div>
+        <div class="content-body">
+            <section class="invoice-list-wrapper">
+                <div class="">
+                    <div class="card d-flex justify-content-between align-items-center mx-0 row">
+                        <table id="dataTable" class="datatables-basic table ">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Hình ảnh</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Mô tả</th>
+                                    @*   <th class="text-truncate">Issued Date</th>*@
+                                    <th> Ngày đăng</th>
+                                    @*<th>Invoice Status</th>*@
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            @*<tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TieuDe)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.MoTa)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.NoiDung)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.HinhAnh)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.NgayDang)
+                                            </td>
+                                            <td>
+                                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>*@
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    
+
+    <!-- Modal add new -->
+    <div class="modal modal-slide-in fade" id="modals">
+        <div class="modal-dialog sidebar-sm" style="width: 75%">
+            <form id="form_config" class="form_config modal-content pt-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">×</button>
+                <div class="modal-header mb-1">
+                    <h5 class="modal-title" id="exampleModalLabel">Thông tin</h5>
+                </div>
+                <div class="modal-body flex-grow-1">
+                    <div class="mb-1">
+                        <label class="form-label" for="name">Tiêu đề</label>
+                        <input type="text" class="form-control TieuDe" id="TieuDe" name="TieuDe" placeholder="Tiêu đề"
+                               aria-label="TieuDe" />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label" for="description">Mô tả</label>
+                        <input type="text" class="form-control MoTa" id="MoTa" name="MoTa"
+                               placeholder="Mô tả" aria-label="MoTa" />
+                    </div>
+                    <div class="mb-1" id="dropzone-images">
+                        <label class="form-label" for="images">Hình ảnh</label>
+
+                        <div id="images" class="dropzone dropzone-area">
+                            <div class="dz-message">
+                                Drop files here or click to upload.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label" for="content">Nội dung</label>
+                        <section class="full-editor">
+                            <textarea id="content"
+                                      cols="80"
+                                      rows="20"></textarea>
+                        </section>
+                    </div>
+                    <button type="submit" class="btn btn-primary data-submit me-1" id="modals_config_btnsave"
+                            name="submit" value="Submit">
+                        Lưu
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+
+@*    .dropzone {
+        min-height: 320px;
+    }
+
+        .dropzone .dz-preview .dz-image {
+            width: 100%;
+            height: 100%;
+        }
+
+            .dropzone .dz-preview .dz-image img {
+                width: 100%;
+            }
+
+        .dropzone .dz-preview {
+            position: inherit;
+            display: block;
+            min-height: auto;
+        }*@
+</style>
+@section scripts{
+
+    <script>
+        var dataTable
+        var modalData
+        var dataFile
+        var imgDropzone
+        var ckEditor
+        var CKEDITOR_config = {
+            toolbar: 'Basic',
+            height: 300,
+            filebrowserImageUploadUrl:
+                'https://localhost:44370/Home/UploadImage',
+        }
+        Dropzone.autoDiscover = false;
+        ckEditor = CKEDITOR.replace('content', CKEDITOR_config)
+        $(document).ready(function () {
+            
+            var modals = new bootstrap.Modal($('#modals'), {
+                keyboard: false,
+            })
+
+            var clearDropzone = function () {
+                dataFile = null
+                imgDropzone.removeAllFiles(true)
+                $('.dz-preview').remove()
+                $('.dz-message').css('display', 'flex')
+            }
+
+            var fillDropzone = function (name, size, imgUrl) {
+                var mockFile = { name: name, size: size }
+                imgDropzone.displayExistingFile(mockFile, imgUrl)
+                $('#dropzone-image .dz-message').css('display', 'none')
+            }
+
+            var clearModal = function () {
+                $('#TieuDe').val('')
+                $('#MoTa').val('')
+                ckEditor.setData('')
+                clearDropzone()
+            }
+
+            var fillModal = function (data) {
+                $('#TieuDe').val(data.TieuDe)
+                $('#MoTa').val(data.MoTa)
+                ckEditor.setData(data.NoiDung)
+                if (data.HinhAnh) {
+                    fillDropzone(
+                        data.HinhAnh.name,
+                        data.HinhAnh.size,
+                        '<%-viewData.baseUrl%>/public/userfiles/images/news/' +
+                        data.image.name
+                    )
+                }
+                
+            }
+
+            if ($('#dataTable').length) {
+                dataTable = $('#dataTable').DataTable({
+                    ordering: false,
+                    //order: [[2, 'desc']],
+                    ajax: {
+                        url: 'https://localhost:44370/Home/Get',
+                        type: 'POST',
+                        datatype: 'json',
+                        data: function (d) {
+                            return $.extend({}, d, {
+                                content: '',
+                            })
+                        },
+                    },
+
+                    columns: [
+                        { data: '' },
+                        { data: 'Id' },
+                        { data: 'HinhAnh' },
+                        { data: 'TieuDe' },
+                        { data: 'MoTa' },
+                        { data: 'NgayDang' },
+                        { data: '' },
+                    ],
+                    columnDefs: [
+                        {
+                            className: 'control',
+                            orderable: false,
+                            targets: 0,
+                            render: function (data, type, full, meta) {
+                                return null
+                            },
+                        },
+                        {
+                            //ID
+                            targets: 1,
+                            visible: false,
+                        },
+
+                        {
+                            // Actions
+                            className: 'text-center',
+                            targets: -1,
+                            title: 'Actions',
+                            orderable: false,
+                            render: function (data, type, full, meta) {
+                                var html = '<div class="d-inline-flex">'
+                                html +=
+                                    '<button type="button" style="margin: 2px" class="btn btn-outline btn-sm" data-feature="edit" data-toggle="tooltip" title="Detail"><i data-feather="edit" class="text-info"></i></button>'
+                                html +=
+                                    '<button type="button" style="margin: 2px" class="btn btn-outline btn-sm" data-feature="delete" data-toggle="tooltip" title="Delete"><i  data-feather="trash" class="text-danger"></i></button>'
+                                html += '</div>'
+                                return html
+                            },
+                        },
+                    ],
+
+                    displayLength: 10,
+                    lengthMenu: [10, 25, 50, 75, 100],
+
+                    responsive: {
+                        details: {
+                            display: $.fn.dataTable.Responsive.display.modal({
+                                header: function (row) {
+                                    var data = row.data()
+                                    return 'Details of ' + data['full_name']
+                                },
+                            }),
+                            type: 'column',
+                            renderer: function (api, rowIdx, columns) {
+                                var data = $.map(columns, function (col, i) {
+                                    return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                                        ? '<tr data-dt-row="' +
+                                        col.rowIdx +
+                                        '" data-dt-column="' +
+                                        col.columnIndex +
+                                        '">' +
+                                        '<td>' +
+                                        col.title +
+                                        ':' +
+                                        '</td> ' +
+                                        '<td>' +
+                                        col.data +
+                                        '</td>' +
+                                        '</tr>'
+                                        : ''
+                                }).join('')
+
+                                return data
+                                    ? $('<table class="table"/>').append(
+                                        '<tbody>' + data + '</tbody>'
+                                    )
+                                    : false
+                            },
+                        },
+                    },
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json',
+                        paginate: {
+                            previous: '&nbsp;',
+                            next: '&nbsp;',
+                        },
+                    },
+                })
+            }
+
+            $('#dataTable tbody').on('click', 'button', function () {
+                $feature = $(this).data('feature')
+                var row = dataTable.row($(this).parents('tr')).data()
+                modalData = row
+                if ($feature == 'edit') {
+                    fillModal(modalData)
+                    modals.show()
+                } else if ($feature == 'delete') {
+                   @* modals_confirm.show()*@
+                }
+            })
+
+            $('#btn_create').click(function () {
+                modalData = null
+                clearModal()
+                modals.show()
+            })
+
+
+        
+            $('#form_config').validate({
+                rules: {
+                    TieuDe: {
+                        required: true,
+                    },
+                   
+                },
+                messages: {
+                    TieuDe: 'Tiêu đề không được để trống',
+                },
+                submitHandler: function () {
+                   
+
+                    var data = {
+                        TieuDe: $('#TieuDe').val(),
+                        MoTa: $('#MoTa').val(),
+                        NoiDung: ckEditor.getData(),
+                        HinhAnh: dataFile,
+                    }
+                    console.log(data)
+                    if (modalData == null) {
+                        $.post(
+                            'https://localhost:44370/Home/Create',
+                            data,
+                            function (result) {
+                                if (!result.isError) {
+                                    dataTable.ajax.reload(null, false)
+                                    modals.hide()
+                                    toastr['success'](
+                                        result.message,
+                                        'SUCCESS',
+                                        {
+                                            tapToDismiss: true,
+                                            timeOut: 2000,
+                                        }
+                                    )
+                                } else {
+                                    toastr['error'](result.message, 'ERROR', {
+                                        tapToDismiss: true,
+                                        timeOut: 2000,
+                                    })
+                                }
+                            }
+                        )
+                    } else {
+                        data.Id = modalData.Id
+                        data.oldFile = modalData.HinhAnh
+                        $.post(
+                            'https://localhost:44370/Home/Update',
+                            data,
+                            function (result) {
+                                if (!result.isError) {
+                                    dataTable.ajax.reload(null, false)
+                                    modals.hide()
+                                    toastr['success'](
+                                        result.message,
+                                        'SUCCESS',
+                                        {
+                                            tapToDismiss: true,
+                                            timeOut: 2000,
+                                        }
+                                    )
+                                } else {
+                                    toastr['error'](result.message, 'ERROR', {
+                                        tapToDismiss: true,
+                                        timeOut: 2000,
+                                    })
+                                }
+                            }
+                        )
+                    }
+                },
+            })
+
+            $('#images').dropzone({
+                paramName: 'file',
+                url: 'https://localhost:44370/Home/UploadImage',
+                maxFiles: 1,
+                acceptedFiles: 'image/*',
+                // addRemoveLinks: true,
+                thumbnailWidth: '250',
+                thumbnailHeight: '250',
+                init: function () {
+                    imgDropzone = this
+                    this.on('maxfilesexceeded', function (file) {
+                        this.removeAllFiles()
+                        this.addFile(file)
+                    })
+                },
+                success: function (file, response) {
+                    if (response) {
+                        console.log("response", response)
+                        dataFile = response
+                    }
+                    $('.dz-message').css('display', 'none')
+                    var dz_previews = document.querySelectorAll('.dz-preview')
+                    if (dz_previews.length > 1) {
+                        dz_previews[0].remove()
+                    }
+                },
+            })
+        });
+    </script>
+
+}
