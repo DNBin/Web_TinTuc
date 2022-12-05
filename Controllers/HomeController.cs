@@ -54,6 +54,15 @@ namespace Web_TinTuc.Controllers
 
         }
 
+        [HttpPost, ValidateInput(false)]
+        public ActionResult Delete(TinTuc model)
+        {
+            _tintucService.Delete(model);
+            var data = "";
+            return Json(data, JsonRequestBehavior.AllowGet);
+
+        }
+
 
 
 
