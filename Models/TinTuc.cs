@@ -13,7 +13,7 @@ namespace Web_TinTuc.Models
         public DateTime? NgayDang { get; set; }
         public string NgayDangShow
         {
-            get { return NgayDang.HasValue ? NgayDang.Value.ToLocalTime().ToString("dd/MM/yyyy") : ""; }
+            get { return NgayDang.HasValue ? NgayDang.Value.ToLocalTime().ToString("dd-MM-yyyy") : ""; }
         }
 
     }

@@ -44,12 +44,26 @@ namespace Web_TinTuc.Service
 
         public List<TinTuc> Get()
         {
-            return _context.TinTucs.OrderByDescending(x => x.Id).ToList();
+            return _context.TinTucs.OrderByDescending(x => x.NgayDang).ToList();
         }
+
+        public Dictionary<string, dynamic> GetListNews()
+        {
+            var list = _context.TinTucs.Where(x => x.NgayDang == DateTime.Now).OrderByDescending(x => x.Id).ToList();
+            var total = _context.TinTucs.Where(x => x.NgayDang == DateTime.Now).OrderByDescending(x => x.Id).ToList().Count();
+            var res = new Dictionary<string, dynamic>()
+            {
+                {"data", list },
+                {"total", total },
+            };
+            return res;
+        }
+
+
         public Dictionary<string, dynamic> GetDataTable()
         {
-            var list = _context.TinTucs.OrderByDescending(x => x.Id).ToList();
-            var total = _context.TinTucs.OrderByDescending(x => x.Id).ToList().Count();
+            var list = _context.TinTucs.OrderByDescending(x => x.NgayDang).ToList();
+            var total = _context.TinTucs.OrderByDescending(x => x.NgayDang).ToList().Count();
             var res = new Dictionary<string, dynamic>()
             {
                 {"data", list },
@@ -73,7 +87,7 @@ namespace Web_TinTuc.Service
             entity.MoTa = model.MoTa;
             entity.NoiDung = model.NoiDung;
             entity.HinhAnh = model.HinhAnh;
-           /* entity.NgayDang = model.NgayDang;*/
+            /*entity.NgayDang = model.NgayDang;*/
             _context.SaveChanges();
         }
 

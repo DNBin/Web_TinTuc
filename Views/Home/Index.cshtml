@@ -86,6 +86,10 @@
                         <input type="text" class="form-control MoTa" id="MoTa" name="MoTa"
                                placeholder="Mô tả" aria-label="MoTa" />
                     </div>
+                   @* <div class="mb-1">
+                        <label class="form-label" for="fp-default">Ngày đăng</label>
+                        <input type="text" id="NgayDang" class="form-control flatpickr-basic" placeholder="DD-MM-YYYY" />
+                    </div>*@
                     <div class="mb-1" id="dropzone-images">
                         <label class="form-label" for="images">Hình ảnh</label>
 
@@ -178,11 +182,18 @@
             toolbar: 'Basic',
             height: 300,
             filebrowserImageUploadUrl:
-                'https://localhost:44370/Home/UploadImage',
+                'https://localhost:44370/Home/UploadImageCkEditor',
         }
+@*        var date_config = {
+            dateFormat: "d-m-Y",
+            
+        }*@
         Dropzone.autoDiscover = false;
         ckEditor = CKEDITOR.replace('content', CKEDITOR_config)
         $(document).ready(function () {
+           @* var date_flatpickr = function () {
+                $('.flatpickr-basic').flatpickr(date_config);
+            }*@
             
             var modals = new bootstrap.Modal($('#modals'), {
                 keyboard: false,
@@ -193,6 +204,7 @@
             })
 
             var clearDropzone = function () {
+                @*date_flatpickr()*@
                 dataFile = null
                 imgDropzone.removeAllFiles(true)
                 $('.dz-preview').remove()
@@ -215,6 +227,12 @@
             var fillModal = function (data) {
                 $('#TieuDe').val(data.TieuDe)
                 $('#MoTa').val(data.MoTa)
+               @* $('.flatpickr-basic').flatpickr({
+                    dateFormat: "d-m-Y",
+                    defaultDate: data.NgayDangShow,
+                 
+                })*@
+
                 ckEditor.setData(data.NoiDung)
                 clearDropzone()
                 if (data.HinhAnh) {
@@ -394,6 +412,7 @@
                     var data = {
                         TieuDe: $('#TieuDe').val(),
                         MoTa: $('#MoTa').val(),
+                     @*   NgayDang: $('#NgayDang').val(),*@
                         NoiDung: ckEditor.getData(),
                         HinhAnh: dataFile,
                     }     
@@ -476,7 +495,7 @@
 
 
             $('#images').dropzone({
-                paramName: 'file',
+                paramName: 'upload',
                 url: 'https://localhost:44370/Home/UploadImage',
                 maxFiles: 1,
                 acceptedFiles: 'image/*',

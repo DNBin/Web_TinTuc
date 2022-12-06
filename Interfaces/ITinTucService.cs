@@ -11,6 +11,7 @@ namespace Web_TinTuc.Interfaces
     {
         List<TinTuc> Get();
         Dictionary<string, dynamic> GetDataTable();
+        Dictionary<string, dynamic> GetListNews();
         TinTuc GetById(int id);
         void Create(TinTuc model);
         void Update(TinTuc model);
