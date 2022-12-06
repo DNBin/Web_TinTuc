@@ -11,5 +11,10 @@ namespace Web_TinTuc.Models
         public string NoiDung { get; set; }
         public string HinhAnh { get; set; }
         public DateTime? NgayDang { get; set; }
+        public string NgayDangShow
+        {
+            get { return NgayDang.HasValue ? NgayDang.Value.ToLocalTime().ToString("dd/MM/yyyy") : ""; }
+        }
+
     }
 }

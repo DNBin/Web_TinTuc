@@ -73,7 +73,7 @@ namespace Web_TinTuc.Service
             entity.MoTa = model.MoTa;
             entity.NoiDung = model.NoiDung;
             entity.HinhAnh = model.HinhAnh;
-            entity.NgayDang = model.NgayDang;
+           /* entity.NgayDang = model.NgayDang;*/
             _context.SaveChanges();
         }
 

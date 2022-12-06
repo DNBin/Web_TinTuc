@@ -202,7 +202,7 @@
             var fillDropzone = function (name, size, imgUrl) {
                 var mockFile = { name: name, size: size }
                 imgDropzone.displayExistingFile(mockFile, imgUrl)
-                $('#dropzone-image .dz-message').css('display', 'none')
+                $('.dz-message').css('display', 'none')
             }
 
             var clearModal = function () {
@@ -249,7 +249,7 @@
                         { data: 'HinhAnh' },
                         { data: 'TieuDe' },
                         { data: 'MoTa' },
-                        { data: 'NgayDang' },
+                        { data: 'NgayDangShow' },
                         { data: '' },
                     ],
                     columnDefs: [
@@ -270,8 +270,15 @@
                             //Image
                             targets: 2,
                             render: function (data, type, full, meta) {
-
-                                var html = '<td><img src="/Assets/images/news/'+data+'" width="50px"/></td>' 
+                                console.log(data)
+                                var html = ""
+                                if (data == null || data == "") {
+                                    html += '<td><img src="/Assets/images/news/no-image.png" width="50px"/></td>'
+                                } else {
+                                   
+                                    html += '<td><img src="/Assets/images/news/' + data + '" width="50px"/></td>'
+                                }
+                                
                                 @*if (type === 'display') {
                                     if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
                                         return moment(data).format('MM/DD/YYYY');
@@ -282,21 +289,7 @@
                             },
                         },
 
-                        {
-                            //date
-                            targets: 5,
-                            render: function (data, type, full, meta) {
-                                
-                                @*var html = '<td>' +@Convert.ToDateTime(data).ToString("dd/MM/YYYY")+'</td>'*@
-                                @*if (type === 'display') {
-                                    if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
-                                        return moment(data).format('MM/DD/YYYY');
-                                    }
-                                }
-                                console.log(data)*@
-                                return data;
-                            },
-                        },
+                       
 
                         {
                             // Actions
